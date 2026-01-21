@@ -33,7 +33,7 @@ const Post = ({ post }) => {
     const likeOrDislikeHandler = async () => {
         try {
             const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/${action}`, { withCredentials: true });
+            const res = await axios.get(`http://localhost:5050/api/v1/post/${post._id}/${action}`, { withCredentials: true });
             console.log(res.data);
             if (res.data.success) {
                 const updatedLikes = liked ? postLike - 1 : postLike + 1;
@@ -58,7 +58,7 @@ const Post = ({ post }) => {
     const commentHandler = async () => {
 
         try {
-            const res = await axios.post(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/comment`, { text }, {
+            const res = await axios.post(`http://localhost:5050/api/v1/post/${post._id}/comment`, { text }, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -84,7 +84,7 @@ const Post = ({ post }) => {
 
     const deletePostHandler = async () => {
         try {
-            const res = await axios.delete(`https://instaclone-g9h5.onrender.com/api/v1/post/delete/${post?._id}`, { withCredentials: true })
+            const res = await axios.delete(`http://localhost:5050/api/v1/post/delete/${post?._id}`, { withCredentials: true })
             if (res.data.success) {
                 const updatedPostData = posts.filter((postItem) => postItem?._id !== post?._id);
                 dispatch(setPosts(updatedPostData));
@@ -98,7 +98,7 @@ const Post = ({ post }) => {
 
     const bookmarkHandler = async () => {
         try {
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
+            const res = await axios.get(`http://localhost:5050/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
             if(res.data.success){
                 toast.success(res.data.message);
             }
@@ -147,10 +147,21 @@ const Post = ({ post }) => {
                         liked ? <FaHeart onClick={likeOrDislikeHandler} size={'24'} className='cursor-pointer text-red-600' /> : <FaRegHeart onClick={likeOrDislikeHandler} size={'22px'} className='cursor-pointer hover:text-gray-600' />
                     }
 
-                    <MessageCircle onClick={() => {
-                        dispatch(setSelectedPost(post));
-                        setOpen(true);
-                    }} className='cursor-pointer hover:text-gray-600' />
+                   <div className='relative inline-block'>
+  <MessageCircle 
+    onClick={() => {
+      dispatch(setSelectedPost(post));
+      setOpen(true);
+    }} 
+    className='cursor-pointer hover:text-gray-600' 
+  />
+  {comment.length > 0 && (
+    <span className='absolute -top-2 -right-2 bg-gray-200 text-xs w-4 h-4 flex items-center justify-center rounded-full text-gray-800'>
+      {comment.length}
+          </span>
+  )}
+</div>
+
                     <Send className='cursor-pointer hover:text-gray-600' />
                 </div>
                 <Bookmark onClick={bookmarkHandler} className='cursor-pointer hover:text-gray-600' />

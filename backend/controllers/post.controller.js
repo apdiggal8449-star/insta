@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
-export const addNewPost = async (req, res) => {
+/*export const addNewPost = async (req, res) => {
     try {
         const { caption } = req.body;
         const image = req.file;
@@ -44,7 +44,59 @@ export const addNewPost = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-}
+}*/
+
+
+export const addNewPost = async (req, res) => {
+  try {
+    const { caption } = req.body;
+    const image = req.file;
+    const authorId = req.id;
+
+    if (!image)
+      return res.status(400).json({ message: "Image is required", success: false });
+
+    // 1️⃣ Optimize image with sharp
+    const optimizedBuffer = await sharp(image.buffer)
+      .resize({ width: 600, height: 600, fit: "inside" })
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    // 2️⃣ Convert buffer to Data URI for Cloudinary
+    const fileUri = `data:image/jpeg;base64,${optimizedBuffer.toString("base64")}`;
+
+    // 3️⃣ Upload to Cloudinary
+    const cloudResponse = await cloudinary.uploader.upload(fileUri, {
+      folder: "posts",
+    });
+
+    // 4️⃣ Create Post in DB
+    const post = await Post.create({
+      caption,
+      image: cloudResponse.secure_url,
+      author: authorId,
+    });
+
+    // 5️⃣ Update user posts asynchronously (non-blocking)
+    User.findByIdAndUpdate(authorId, { $push: { posts: post._id } }).catch(err =>
+      console.error("Failed to update user posts:", err)
+    );
+
+    // 6️⃣ Populate post author for frontend
+    await post.populate({ path: "author", select: "-password" });
+
+    // ✅ Respond fast
+    return res.status(201).json({
+      message: "New post added",
+      post,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Add Post Error:", error);
+    return res.status(500).json({ message: "Server error, try again later", success: false });
+  }
+};
+
 export const getAllPost = async (req, res) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 })

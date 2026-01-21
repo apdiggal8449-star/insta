@@ -5,7 +5,13 @@ import upload from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.route('/register').post(register);
+//router.route('/register').post(register);
+router.post(
+  "/register",
+  upload.single("image"), // 👈 yahi add karna hai
+  register
+);
+
 router.route('/login').post(login);
 router.route('/logout').get(logout);
 router.route('/:id/profile').get(isAuthenticated, getProfile);

@@ -21,7 +21,7 @@ const LeftSidebar = () => {
 
     const logoutHandler = async () => {
         try {
-            const res = await axios.get('https://instaclone-g9h5.onrender.com/api/v1/user/logout', { withCredentials: true });
+            const res = await axios.get('http://localhost:5050/api/v1/user/logout', { withCredentials: true });
             if (res.data.success) {
                 dispatch(setAuthUser(null));
                 dispatch(setSelectedPost(null));
@@ -43,6 +43,8 @@ const LeftSidebar = () => {
             navigate(`/profile/${user?._id}`);
         } else if (textType === "Home") {
             navigate("/");
+          }  else if (textType === "Search") {
+            navigate("/search");
         } else if (textType === 'Messages') {
             navigate("/chat");
         }
@@ -69,7 +71,7 @@ const LeftSidebar = () => {
     return (
         <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
             <div className='flex flex-col'>
-                <h1 className='my-8 pl-3 font-bold text-xl'>LOGO</h1>
+                <h1 className='my-8 pl-3 font-bold text-xl'>INSTAGRAM</h1>
                 <div>
                     {
                         sidebarItems.map((item, index) => {
@@ -78,7 +80,7 @@ const LeftSidebar = () => {
                                     {item.icon}
                                     <span>{item.text}</span>
                                     {
-                                        item.text === "Notifications" && likeNotification.length > 0 && (
+                                       /* item.text === "Notifications" && likeNotification.length > 0 && (
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button size='icon' className="rounded-full h-5 w-5 bg-red-600 hover:bg-red-600 absolute bottom-6 left-6">{likeNotification.length}</Button>
@@ -102,7 +104,34 @@ const LeftSidebar = () => {
                                                         }
                                                     </div>
                                                 </PopoverContent>
-                                            </Popover>
+                                            </Popover>*/
+                  item.text === "Notifications" && (
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button size='icon' className="rounded-full h-5 w-5 bg-red-600 hover:bg-red-600 absolute bottom-6 left-6">
+        {likeNotification?.length || 0}
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent>
+      {likeNotification?.length === 0 ? (
+        <p>No new notifications</p>
+      ) : (
+        likeNotification.map((notification) => (
+          <div key={notification._id} className='flex items-center gap-2 my-2'>
+            <Avatar>
+              <AvatarImage src={notification.userDetails?.profilePicture} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <p className='text-sm'>
+              <span className='font-bold'>{notification.userDetails?.username}</span> liked your post
+            </p>
+          </div>
+        ))
+      )}
+    </PopoverContent>
+  </Popover>
+
+                          
                                         )
                                     }
                                 </div>
