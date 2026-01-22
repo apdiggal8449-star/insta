@@ -15,7 +15,7 @@ const Search = () => {
     if (!query) return;
 
     try {
-      const res = await axios.get(`http://localhost:5050/api/v1/user/search?query=${query}`, {
+      const res = await axios.get(`https://insta-2-d9wn.onrender.com/api/v1/user/search?query=${query}`, {
         withCredentials: true
       });
       if (res.data.success) {

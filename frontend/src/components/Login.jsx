@@ -26,7 +26,7 @@ const Login = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post('https://insta-4ea8.onrender.com/api/v1/user/login', input, {
+            const res = await axios.post('https://insta-2-d9wn.onrender.com/api/v1/user/login', input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },

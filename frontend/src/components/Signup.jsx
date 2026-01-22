@@ -184,7 +184,7 @@ const Signup = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://insta-4ea8.onrender.com/api/v1/user/register",
+        "https://insta-2-d9wn.onrender.com/api/v1/user/register",
         formData,
         { withCredentials: true }
       );
